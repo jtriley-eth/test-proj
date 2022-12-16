@@ -34,15 +34,38 @@ async fn get_contract_instance() -> (MyContract, ContractId) {
 }
 
 #[tokio::test]
-async fn can_get_contract_id() {
+async fn passing_tests() {
     let (contract_instance, _id) = get_contract_instance().await;
 
     let result = contract_instance
         .methods()
-        .test_function()
+        .passes_ok()
         .call()
         .await
         .unwrap();
 
     assert!(result.value);
+
+    let result = contract_instance
+        .methods()
+        .passes_err()
+        .call()
+        .await
+        .unwrap();
+
+    assert!(result.value);
+}
+
+#[tokio::test]
+async fn failing_test() {
+    let (contract_instance, _id) = get_contract_instance().await;
+
+    // FAILS HERE
+    let result = contract_instance
+        .methods()
+        .fails()
+        .call()
+        .await;
+
+    assert!(result.is_err());
 }
